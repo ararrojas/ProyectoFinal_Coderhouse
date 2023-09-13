@@ -17,5 +17,5 @@ Los usuarios pueden realizar las siguientes accciones:
 5. Editar usuario, por ejemplo datos básicos de inicio.
 6. Cambiar contraseñas.
 7. Eliminar registro.
-8. Login y Logout.
+8. Login y Logout.  
 
