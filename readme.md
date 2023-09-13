@@ -1,8 +1,8 @@
-## Proyecto Final Coder House - Python  
+# Proyecto Final Coder House - Python  
 
 Alumna: Araceli Rojas
 
-# Descripción del Proyecto
+## Descripción del Proyecto
 
 Página Web destinada a usuarios que necesiten crear cursos, usuarios de profesores, usuarios de estudiantes y las correspondientes modificaciones.
 
