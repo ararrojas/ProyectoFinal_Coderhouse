@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from .models import Curso
 
-from .forms import CursoFormulario, ProfesorFormulario
-from .models import Curso, Profesor
+from .forms import CursoFormulario, ProfesorFormulario, EstudianteFormulario
+from .models import Curso, Profesor, Estudiante
 
 # Create your views here.
 
@@ -100,6 +100,27 @@ def profesores_crud_update_view(request, profesor_email):
             profesor.save()
         return profesores_crud_read_view(request)
 
+def estudiante_view(request):
+    if request.method == "GET":
+        return render(
+            request,
+            "AppCoder/estudiante_formulario.html",
+            {"form": EstudianteFormulario()}
+        )
+    else:
+        formulario = EstudianteFormulario(request.POST)
+        if formulario.is_valid():
+            informacion = formulario.cleaned_data
+            modelo = Estudiante(
+                nombre=informacion["nombre"],
+                apellido=informacion["apellido"],
+                email=informacion["email"],
+            )
+            modelo.save()
+        return render(
+            request,
+            "AppCoder/estudiante_formulario.html",
+        )
 
 
 #################### ClassBasedViews (CBV)  - Vistas basadas en Clases #########################################
@@ -136,6 +157,7 @@ class CursoDeleteView(DeleteView):
 
 
 ############################ Login #####################################
+
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
 from django.contrib.auth import login, authenticate
 

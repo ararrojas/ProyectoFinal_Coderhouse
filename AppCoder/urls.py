@@ -9,6 +9,7 @@ from .views import (
     profesores_crud_read_view,
     profesores_crud_delete_view,
     profesores_crud_update_view,
+    estudiante_view,
     # CBV
     CursoCreateView,
     CursoDetail,
@@ -33,6 +34,7 @@ urlpatterns = [
     path("profesores-lista/", profesores_crud_read_view),
     path("profesores-eliminar/<profesor_email>/", profesores_crud_delete_view),
     path("profesores-editar/<profesor_email>/", profesores_crud_update_view),
+    path("estudiante_formulario/", estudiante_view),
 
     ### CBV
 

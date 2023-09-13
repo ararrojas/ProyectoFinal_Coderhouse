@@ -12,6 +12,11 @@ class ProfesorFormulario(forms.Form):
     email = forms.EmailField()
     profesion = forms.CharField()
 
+class EstudianteFormulario(forms.Form):
+    nombre = forms.CharField()
+    apellido = forms.CharField()
+    email = forms.EmailField()
+
 
 
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm, UserModel
