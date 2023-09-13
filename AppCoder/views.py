@@ -1,33 +1,34 @@
 from django.shortcuts import render
-
-from .models import Curso
-from .forms import CursoFormulario
 from .models import Curso
 
-from .forms import CursoFormulario, ProfesorFormulario, EstudianteFormulario
-from .models import Curso, Profesor, Estudiante
+from .forms import CursoFormulario, ProfesorFormulario
+from .models import Curso, Profesor
 
 # Create your views here.
+
 
 from django.views.generic import ListView, CreateView, DeleteView, UpdateView, DetailView
 from django.urls import reverse_lazy
 
+
+
 def inicio_view(request):
-    return render(request, 'AppCoder/inicio.html')
+    return render(request, "AppCoder/inicio.html")
+
 
 def cursos_view(request):
     if request.method == "GET":
-        print("+" * 90) #  Imprimimos esto para ver por consola
-        print("+" * 90) #  Imprimimos esto para ver por consola
+        print("+" * 90) 
+        print("+" * 90) 
         return render(
             request,
             "AppCoder/curso_formulario_avanzado.html",
             {"form": CursoFormulario()}
         )
     else:
-        print("*" * 90)     #  Imprimimos esto para ver por consola
-        print(request.POST) #  Imprimimos esto para ver por consola
-        print("*" * 90)     #  Imprimimos esto para ver por consola
+        print("*" * 90)     
+        print(request.POST) 
+        print("*" * 90)     
 
         modelo = Curso(curso=request.POST["curso"], camada=request.POST["camada"])
         modelo.save()
@@ -98,32 +99,10 @@ def profesores_crud_update_view(request, profesor_email):
             profesor.profesion=informacion["profesion"]
             profesor.save()
         return profesores_crud_read_view(request)
-    
-def estudiante_view(request):
-    if request.method == "GET":
-        return render(
-            request,
-            "AppCoder/estudiante_formulario.html",
-            {"form": EstudianteFormulario()}
-        )
-    else:
-        formulario = EstudianteFormulario(request.POST)
-        if formulario.is_valid():
-            informacion = formulario.cleaned_data
-            modelo = Estudiante(
-                nombre=informacion["nombre"],
-                apellido=informacion["apellido"],
-                email=informacion["email"],
-            )
-            modelo.save()
-        return render(
-            request,
-            "AppCoder/estudiante_formulario.html",
-        )
 
 
 
-####################  ClassBasedViews (CBV)  - Vistas basadas en Clases #########################################
+#################### ClassBasedViews (CBV)  - Vistas basadas en Clases #########################################
 
 class CursoListView(ListView):
     model = Curso
@@ -155,3 +134,121 @@ class CursoDeleteView(DeleteView):
     success_url = reverse_lazy("curso-list")
 
 
+
+############################ Login #####################################
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
+from django.contrib.auth import login, authenticate
+
+def login_view(request):
+
+    if request.user.is_authenticated:
+        return render(
+            request,
+            "AppCoder/inicio.html",
+            {"mensaje": f"Ya estás autenticado: {request.user.username}"}
+        )
+
+
+    if request.method == "GET":
+        return render(
+            request,
+            "AppCoder/login.html",
+            {"form": AuthenticationForm()}
+        )
+    else:
+        formulario = AuthenticationForm(request, data=request.POST)
+        if formulario.is_valid():
+            informacion = formulario.cleaned_data
+            usuario = informacion["username"]
+            password = informacion["password"]
+            modelo = authenticate(username=usuario, password=password)
+            login(request, modelo)
+
+        return render(
+            request,
+            "AppCoder/inicio.html",
+            {"mensaje": f"Bienvenido {modelo.username}"}
+        )
+
+
+def logout_view(request):
+    pass
+
+
+from .forms import UserCreationFormulario, UserEditionFormulario
+from django.contrib.auth.views import PasswordChangeView
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+
+def registro_view(request):
+
+    if request.method == "GET":
+        return render(
+            request,
+            "AppCoder/registro.html",
+            {"form": UserCreationFormulario()}
+        )
+    else:
+        formulario = UserCreationFormulario(request.POST)
+        if formulario.is_valid():
+            informacion = formulario.cleaned_data
+            usuario = informacion["username"]
+            formulario.save()
+
+            return render(
+                request,
+                "AppCoder/inicio.html",
+                {"mensaje": f"Usuario creado: {usuario}"}
+            )
+        else:
+            return render(
+                request,
+                "AppCoder/registro.html",
+                {"form": formulario}
+            )
+
+
+def editar_usuario_view(request):
+
+
+    if not request.user.is_authenticated:
+        return render(
+            request,
+            "AppCoder/login.html",
+            {"form": AuthenticationForm()}
+        )
+
+    if request.method == "GET":
+        return render(
+            request,
+            "AppCoder/editar_usuario.html",
+            {"form": UserEditionFormulario()}
+        )
+    else:
+        formulario = UserEditionFormulario(request.POST)
+        if formulario.is_valid():
+            informacion = formulario.cleaned_data
+            print(informacion)
+            user = request.user
+            user.email = informacion["email"]
+            user.first_name = informacion["first_name"]
+            user.last_name = informacion["last_name"]
+            user.save()
+            # formulario.save()
+
+            return render(
+                request,
+                "AppCoder/inicio.html",
+                {"mensaje": f"Usuario creado"}
+            )
+        else:
+            return render(
+                request,
+                "AppCoder/editar-usuario.html",
+                {"form": formulario}
+            )
+
+
+class CambiarContrasenia(LoginRequiredMixin, PasswordChangeView):
+    template_name = "AppCoder/cambiar_contrasenia.html"
+    success_url = reverse_lazy("editar-usuario")

@@ -5,6 +5,6 @@ from django.contrib import admin
 from .models import Curso
 
 
-@admin.register(Curso) # decorador 
+@admin.register(Curso)
 class CursoAdmin(admin.ModelAdmin):
     pass
